@@ -4,15 +4,15 @@ import Mod from "@wayward/game/mod/Mod";
 
 // Boats to be modified with increased weight capacity
 const boats = [
-    ItemType.BoatPaddle,
+    ItemType.Raft,
     ItemType.BullBoat,
     ItemType.Sailboat
 ];
 
 // Mapping of new weight capacities for each boat type
 const weightCapacities: Partial<Record<ItemType, number>> = {
-    [ItemType.BoatPaddle]: 500,
-    [ItemType.BullBoat]: 1000,
+    [ItemType.Raft]: 300,
+    [ItemType.BullBoat]: 700,
     [ItemType.Sailboat]: 1200
 };
 
