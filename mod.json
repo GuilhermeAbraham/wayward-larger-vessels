@@ -5,7 +5,7 @@
 	"author": "Guilherme",
 	"file": "out/Mod",
 	"waywardVersion": "2.15.1-beta",
-	"multiplayer": "both",
+	"multiplayer": "compatible",
 	"allowUnlockingMilestones": true,
 	"unloadable": true
 }
