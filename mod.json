@@ -1,0 +1,11 @@
+{
+	"name": "Larger Vessels",
+	"description": "Overwrite the weight capacity of boat vessels",
+	"version": "1.0.0",
+	"author": "Guilherme",
+	"file": "out/Mod",
+	"waywardVersion": "2.15.1-beta",
+	"multiplayer": "both",
+	"allowUnlockingMilestones": true,
+	"unloadable": true
+}
