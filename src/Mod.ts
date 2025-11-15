@@ -4,32 +4,32 @@ import { IItemDescription, ItemType } from "@wayward/game/game/item/IItem";
 import { itemDescriptions } from "@wayward/game/game/item/ItemDescriptions";
 import Mod from "@wayward/game/mod/Mod";
 
-// Boats to be modified with increased weight capacity
-enum Boats {
+// Vessels to be modified with increased weight capacity
+const enum Vessels {
     Raft,
     BullBoat,
     Sailboat
 };
 
-// Mapping of ItemType for each boat type
-const boatsItemTypes: Record<Boats, ItemType> = {
-    [Boats.Raft]: ItemType.Raft,
-    [Boats.BullBoat]: ItemType.BullBoat,
-    [Boats.Sailboat]: ItemType.Sailboat
+// Mapping of ItemType for each vessel type
+const vesselsItemTypes: Record<Vessels, ItemType> = {
+    [Vessels.Raft]: ItemType.Raft,
+    [Vessels.BullBoat]: ItemType.BullBoat,
+    [Vessels.Sailboat]: ItemType.Sailboat,
 };
 
-// Mapping of DoodadType for each boat type
-const boatsDoodadTypes: Record<Boats, DoodadType> = {
-    [Boats.Raft]: DoodadType.Raft,
-    [Boats.BullBoat]: DoodadType.BullBoat,
-    [Boats.Sailboat]: DoodadType.Sailboat
+// Mapping of DoodadType for each vessel type
+const vesselsDoodadTypes: Record<Vessels, DoodadType> = {
+    [Vessels.Raft]: DoodadType.Raft,
+    [Vessels.BullBoat]: DoodadType.BullBoat,
+    [Vessels.Sailboat]: DoodadType.Sailboat
 };
 
-// Mapping of new weight capacities for each boat type
-const weightCapacities: Partial<Record<Boats, number>> = {
-    [Boats.Raft]: 300,
-    [Boats.BullBoat]: 700,
-    [Boats.Sailboat]: 1200
+// Mapping of new weight capacities for each vessel type
+const weightCapacities: Partial<Record<Vessels, number>> = {
+    [Vessels.Raft]: 300,
+    [Vessels.BullBoat]: 700,
+    [Vessels.Sailboat]: 1200
 };
 
 export default class LargerVessels extends Mod {
@@ -38,46 +38,42 @@ export default class LargerVessels extends Mod {
     public static readonly INSTANCE: LargerVessels;
 
     // Structure to store the original item description to restore it on unload
-    private vanillaItems: {
-        itemIndex: number;
-        originalItem: IItemDescription
-    }[] = [];
+    private vanillaItems: Map<ItemType, IItemDescription> = new Map();
 
-    private vanillaDoodads: {
-        doodadIndex: number;
-        originalDoodad: IDoodadDescription
-    }[] = [];
+    private vanillaDoodads: Map<DoodadType, IDoodadDescription> = new Map();
 
     public override onLoad(): void {
-        Object.entries(Boats).map(([key, boat]) => {
-            const newCapacity = weightCapacities[boat as Boats];
-            if (newCapacity !== undefined && isNaN(newCapacity) === false) {
-                // Store the original item and adjust the weight capacity
-                const itemDescription = itemDescriptions[boatsItemTypes[boat as Boats]];
-                if (itemDescription) {
-                    this.vanillaItems.push({ itemIndex: Number(key), originalItem: { ...itemDescription } });
-                    itemDescription.weightCapacity = newCapacity;
-                }
-
-                // Store the original doodad and adjust the weight capacity
-                const doodadDescription = doodadDescriptions[boatsDoodadTypes[boat as Boats]];
-                if (doodadDescription) {
-                    this.vanillaDoodads.push({ doodadIndex: Number(key), originalDoodad: { ...doodadDescription } });
-                    doodadDescription.weightCapacity = newCapacity;
-                }
+        // Iterate through vessels defined in weightCapacities
+        for (const [vesselKey, newCapacity] of Object.entries(weightCapacities)) {
+            const vessel = Number(vesselKey) as Vessels;
+            
+            // Store the original item and adjust the weight capacity
+            const itemType = vesselsItemTypes[vessel];
+            const itemDescription = itemDescriptions[itemType];
+            if (itemDescription && !this.vanillaItems.has(itemType)) {
+                this.vanillaItems.set(itemType, { ...itemDescription });
+                itemDescription.weightCapacity = newCapacity;
             }
-        })
+
+            // Store the original doodad and adjust the weight capacity
+            const doodadType = vesselsDoodadTypes[vessel];
+            const doodadDescription = doodadDescriptions[doodadType];
+            if (doodadDescription && !this.vanillaDoodads.has(doodadType)) {
+                this.vanillaDoodads.set(doodadType, { ...doodadDescription });
+                doodadDescription.weightCapacity = newCapacity;
+            }
+        }
     }
 
     public override onUnload(): void {
         // Restore the original item descriptions for items
-        this.vanillaItems.map(original => {
-            itemDescriptions[original.itemIndex] = original.originalItem;
-        });
+        for (const [itemType, originalItem] of this.vanillaItems) {
+            itemDescriptions[itemType] = originalItem;
+        }
 
         // Restore the original item descriptions for doodads
-        this.vanillaDoodads.map(original => {
-            doodadDescriptions[original.doodadIndex] = original.originalDoodad;
-        });
+        for (const [doodadType, originalDoodad] of this.vanillaDoodads) {
+            doodadDescriptions[doodadType] = originalDoodad;
+        }
     }
 }

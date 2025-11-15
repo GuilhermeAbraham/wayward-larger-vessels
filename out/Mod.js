@@ -7,58 +7,58 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "@wayward/game/game/doodad/Doodads", "@wayward/game/game/doodad/IDoodad", "@wayward/game/game/item/IItem", "@wayward/game/game/item/ItemDescriptions", "@wayward/game/mod/Mod"], function (require, exports, Doodads_1, IDoodad_1, IItem_1, ItemDescriptions_1, Mod_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var Boats;
-    (function (Boats) {
-        Boats[Boats["Raft"] = 0] = "Raft";
-        Boats[Boats["BullBoat"] = 1] = "BullBoat";
-        Boats[Boats["Sailboat"] = 2] = "Sailboat";
-    })(Boats || (Boats = {}));
+    var Vessels;
+    (function (Vessels) {
+        Vessels[Vessels["Raft"] = 0] = "Raft";
+        Vessels[Vessels["BullBoat"] = 1] = "BullBoat";
+        Vessels[Vessels["Sailboat"] = 2] = "Sailboat";
+    })(Vessels || (Vessels = {}));
     ;
-    const boatsItemTypes = {
-        [Boats.Raft]: IItem_1.ItemType.Raft,
-        [Boats.BullBoat]: IItem_1.ItemType.BullBoat,
-        [Boats.Sailboat]: IItem_1.ItemType.Sailboat
+    const vesselsItemTypes = {
+        [0]: IItem_1.ItemType.Raft,
+        [1]: IItem_1.ItemType.BullBoat,
+        [2]: IItem_1.ItemType.Sailboat,
     };
-    const boatsDoodadTypes = {
-        [Boats.Raft]: IDoodad_1.DoodadType.Raft,
-        [Boats.BullBoat]: IDoodad_1.DoodadType.BullBoat,
-        [Boats.Sailboat]: IDoodad_1.DoodadType.Sailboat
+    const vesselsDoodadTypes = {
+        [0]: IDoodad_1.DoodadType.Raft,
+        [1]: IDoodad_1.DoodadType.BullBoat,
+        [2]: IDoodad_1.DoodadType.Sailboat
     };
     const weightCapacities = {
-        [Boats.Raft]: 300,
-        [Boats.BullBoat]: 700,
-        [Boats.Sailboat]: 1200
+        [0]: 300,
+        [1]: 700,
+        [2]: 1200
     };
     class LargerVessels extends Mod_1.default {
         constructor() {
             super(...arguments);
-            this.vanillaItems = [];
-            this.vanillaDoodads = [];
+            this.vanillaItems = new Map();
+            this.vanillaDoodads = new Map();
         }
         onLoad() {
-            Object.entries(Boats).map(([key, boat]) => {
-                const newCapacity = weightCapacities[boat];
-                if (newCapacity !== undefined && isNaN(newCapacity) === false) {
-                    const itemDescription = ItemDescriptions_1.itemDescriptions[boatsItemTypes[boat]];
-                    if (itemDescription) {
-                        this.vanillaItems.push({ itemIndex: Number(key), originalItem: { ...itemDescription } });
-                        itemDescription.weightCapacity = newCapacity;
-                    }
-                    const doodadDescription = Doodads_1.doodadDescriptions[boatsDoodadTypes[boat]];
-                    if (doodadDescription) {
-                        this.vanillaDoodads.push({ doodadIndex: Number(key), originalDoodad: { ...doodadDescription } });
-                        doodadDescription.weightCapacity = newCapacity;
-                    }
+            for (const [vesselKey, newCapacity] of Object.entries(weightCapacities)) {
+                const vessel = Number(vesselKey);
+                const itemType = vesselsItemTypes[vessel];
+                const itemDescription = ItemDescriptions_1.itemDescriptions[itemType];
+                if (itemDescription && !this.vanillaItems.has(itemType)) {
+                    this.vanillaItems.set(itemType, { ...itemDescription });
+                    itemDescription.weightCapacity = newCapacity;
                 }
-            });
+                const doodadType = vesselsDoodadTypes[vessel];
+                const doodadDescription = Doodads_1.doodadDescriptions[doodadType];
+                if (doodadDescription && !this.vanillaDoodads.has(doodadType)) {
+                    this.vanillaDoodads.set(doodadType, { ...doodadDescription });
+                    doodadDescription.weightCapacity = newCapacity;
+                }
+            }
         }
         onUnload() {
-            this.vanillaItems.map(original => {
-                ItemDescriptions_1.itemDescriptions[original.itemIndex] = original.originalItem;
-            });
-            this.vanillaDoodads.map(original => {
-                Doodads_1.doodadDescriptions[original.doodadIndex] = original.originalDoodad;
-            });
+            for (const [itemType, originalItem] of this.vanillaItems) {
+                ItemDescriptions_1.itemDescriptions[itemType] = originalItem;
+            }
+            for (const [doodadType, originalDoodad] of this.vanillaDoodads) {
+                Doodads_1.doodadDescriptions[doodadType] = originalDoodad;
+            }
         }
     }
     exports.default = LargerVessels;
@@ -66,4 +66,4 @@ define(["require", "exports", "@wayward/game/game/doodad/Doodads", "@wayward/gam
         Mod_1.default.instance()
     ], LargerVessels, "INSTANCE", void 0);
 });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiTW9kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL01vZC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7SUFPQSxJQUFLLEtBSUo7SUFKRCxXQUFLLEtBQUs7UUFDTixpQ0FBSSxDQUFBO1FBQ0oseUNBQVEsQ0FBQTtRQUNSLHlDQUFRLENBQUE7SUFDWixDQUFDLEVBSkksS0FBSyxLQUFMLEtBQUssUUFJVDtJQUFBLENBQUM7SUFHRixNQUFNLGNBQWMsR0FBNEI7UUFDNUMsQ0FBQyxLQUFLLENBQUMsSUFBSSxDQUFDLEVBQUUsZ0JBQVEsQ0FBQyxJQUFJO1FBQzNCLENBQUMsS0FBSyxDQUFDLFFBQVEsQ0FBQyxFQUFFLGdCQUFRLENBQUMsUUFBUTtRQUNuQyxDQUFDLEtBQUssQ0FBQyxRQUFRLENBQUMsRUFBRSxnQkFBUSxDQUFDLFFBQVE7S0FDdEMsQ0FBQztJQUdGLE1BQU0sZ0JBQWdCLEdBQThCO1FBQ2hELENBQUMsS0FBSyxDQUFDLElBQUksQ0FBQyxFQUFFLG9CQUFVLENBQUMsSUFBSTtRQUM3QixDQUFDLEtBQUssQ0FBQyxRQUFRLENBQUMsRUFBRSxvQkFBVSxDQUFDLFFBQVE7UUFDckMsQ0FBQyxLQUFLLENBQUMsUUFBUSxDQUFDLEVBQUUsb0JBQVUsQ0FBQyxRQUFRO0tBQ3hDLENBQUM7SUFHRixNQUFNLGdCQUFnQixHQUFtQztRQUNyRCxDQUFDLEtBQUssQ0FBQyxJQUFJLENBQUMsRUFBRSxHQUFHO1FBQ2pCLENBQUMsS0FBSyxDQUFDLFFBQVEsQ0FBQyxFQUFFLEdBQUc7UUFDckIsQ0FBQyxLQUFLLENBQUMsUUFBUSxDQUFDLEVBQUUsSUFBSTtLQUN6QixDQUFDO0lBRUYsTUFBcUIsYUFBYyxTQUFRLGFBQUc7UUFBOUM7O1lBTVksaUJBQVksR0FHZCxFQUFFLENBQUM7WUFFRCxtQkFBYyxHQUdoQixFQUFFLENBQUM7UUFrQ2IsQ0FBQztRQWhDbUIsTUFBTTtZQUNsQixNQUFNLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsR0FBRyxFQUFFLElBQUksQ0FBQyxFQUFFLEVBQUU7Z0JBQ3RDLE1BQU0sV0FBVyxHQUFHLGdCQUFnQixDQUFDLElBQWEsQ0FBQyxDQUFDO2dCQUNwRCxJQUFJLFdBQVcsS0FBSyxTQUFTLElBQUksS0FBSyxDQUFDLFdBQVcsQ0FBQyxLQUFLLEtBQUssRUFBRSxDQUFDO29CQUU1RCxNQUFNLGVBQWUsR0FBRyxtQ0FBZ0IsQ0FBQyxjQUFjLENBQUMsSUFBYSxDQUFDLENBQUMsQ0FBQztvQkFDeEUsSUFBSSxlQUFlLEVBQUUsQ0FBQzt3QkFDbEIsSUFBSSxDQUFDLFlBQVksQ0FBQyxJQUFJLENBQUMsRUFBRSxTQUFTLEVBQUUsTUFBTSxDQUFDLEdBQUcsQ0FBQyxFQUFFLFlBQVksRUFBRSxFQUFFLEdBQUcsZUFBZSxFQUFFLEVBQUUsQ0FBQyxDQUFDO3dCQUN6RixlQUFlLENBQUMsY0FBYyxHQUFHLFdBQVcsQ0FBQztvQkFDakQsQ0FBQztvQkFHRCxNQUFNLGlCQUFpQixHQUFHLDRCQUFrQixDQUFDLGdCQUFnQixDQUFDLElBQWEsQ0FBQyxDQUFDLENBQUM7b0JBQzlFLElBQUksaUJBQWlCLEVBQUUsQ0FBQzt3QkFDcEIsSUFBSSxDQUFDLGNBQWMsQ0FBQyxJQUFJLENBQUMsRUFBRSxXQUFXLEVBQUUsTUFBTSxDQUFDLEdBQUcsQ0FBQyxFQUFFLGNBQWMsRUFBRSxFQUFFLEdBQUcsaUJBQWlCLEVBQUUsRUFBRSxDQUFDLENBQUM7d0JBQ2pHLGlCQUFpQixDQUFDLGNBQWMsR0FBRyxXQUFXLENBQUM7b0JBQ25ELENBQUM7Z0JBQ0wsQ0FBQztZQUNMLENBQUMsQ0FBQyxDQUFBO1FBQ04sQ0FBQztRQUVlLFFBQVE7WUFFcEIsSUFBSSxDQUFDLFlBQVksQ0FBQyxHQUFHLENBQUMsUUFBUSxDQUFDLEVBQUU7Z0JBQzdCLG1DQUFnQixDQUFDLFFBQVEsQ0FBQyxTQUFTLENBQUMsR0FBRyxRQUFRLENBQUMsWUFBWSxDQUFDO1lBQ2pFLENBQUMsQ0FBQyxDQUFDO1lBR0gsSUFBSSxDQUFDLGNBQWMsQ0FBQyxHQUFHLENBQUMsUUFBUSxDQUFDLEVBQUU7Z0JBQy9CLDRCQUFrQixDQUFDLFFBQVEsQ0FBQyxXQUFXLENBQUMsR0FBRyxRQUFRLENBQUMsY0FBYyxDQUFDO1lBQ3ZFLENBQUMsQ0FBQyxDQUFDO1FBQ1AsQ0FBQztLQUNKO0lBaERELGdDQWdEQztJQTdDMEI7UUFEdEIsYUFBRyxDQUFDLFFBQVEsRUFBaUI7eUNBQ2lCIn0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiTW9kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL01vZC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7SUFPQSxJQUFXLE9BSVY7SUFKRCxXQUFXLE9BQU87UUFDZCxxQ0FBSSxDQUFBO1FBQ0osNkNBQVEsQ0FBQTtRQUNSLDZDQUFRLENBQUE7SUFDWixDQUFDLEVBSlUsT0FBTyxLQUFQLE9BQU8sUUFJakI7SUFBQSxDQUFDO0lBR0YsTUFBTSxnQkFBZ0IsR0FBOEI7UUFDaEQsR0FBYyxFQUFFLGdCQUFRLENBQUMsSUFBSTtRQUM3QixHQUFrQixFQUFFLGdCQUFRLENBQUMsUUFBUTtRQUNyQyxHQUFrQixFQUFFLGdCQUFRLENBQUMsUUFBUTtLQUN4QyxDQUFDO0lBR0YsTUFBTSxrQkFBa0IsR0FBZ0M7UUFDcEQsR0FBYyxFQUFFLG9CQUFVLENBQUMsSUFBSTtRQUMvQixHQUFrQixFQUFFLG9CQUFVLENBQUMsUUFBUTtRQUN2QyxHQUFrQixFQUFFLG9CQUFVLENBQUMsUUFBUTtLQUMxQyxDQUFDO0lBR0YsTUFBTSxnQkFBZ0IsR0FBcUM7UUFDdkQsR0FBYyxFQUFFLEdBQUc7UUFDbkIsR0FBa0IsRUFBRSxHQUFHO1FBQ3ZCLEdBQWtCLEVBQUUsSUFBSTtLQUMzQixDQUFDO0lBRUYsTUFBcUIsYUFBYyxTQUFRLGFBQUc7UUFBOUM7O1lBTVksaUJBQVksR0FBb0MsSUFBSSxHQUFHLEVBQUUsQ0FBQztZQUUxRCxtQkFBYyxHQUF3QyxJQUFJLEdBQUcsRUFBRSxDQUFDO1FBb0M1RSxDQUFDO1FBbENtQixNQUFNO1lBRWxCLEtBQUssTUFBTSxDQUFDLFNBQVMsRUFBRSxXQUFXLENBQUMsSUFBSSxNQUFNLENBQUMsT0FBTyxDQUFDLGdCQUFnQixDQUFDLEVBQUUsQ0FBQztnQkFDdEUsTUFBTSxNQUFNLEdBQUcsTUFBTSxDQUFDLFNBQVMsQ0FBWSxDQUFDO2dCQUc1QyxNQUFNLFFBQVEsR0FBRyxnQkFBZ0IsQ0FBQyxNQUFNLENBQUMsQ0FBQztnQkFDMUMsTUFBTSxlQUFlLEdBQUcsbUNBQWdCLENBQUMsUUFBUSxDQUFDLENBQUM7Z0JBQ25ELElBQUksZUFBZSxJQUFJLENBQUMsSUFBSSxDQUFDLFlBQVksQ0FBQyxHQUFHLENBQUMsUUFBUSxDQUFDLEVBQUUsQ0FBQztvQkFDdEQsSUFBSSxDQUFDLFlBQVksQ0FBQyxHQUFHLENBQUMsUUFBUSxFQUFFLEVBQUUsR0FBRyxlQUFlLEVBQUUsQ0FBQyxDQUFDO29CQUN4RCxlQUFlLENBQUMsY0FBYyxHQUFHLFdBQVcsQ0FBQztnQkFDakQsQ0FBQztnQkFHRCxNQUFNLFVBQVUsR0FBRyxrQkFBa0IsQ0FBQyxNQUFNLENBQUMsQ0FBQztnQkFDOUMsTUFBTSxpQkFBaUIsR0FBRyw0QkFBa0IsQ0FBQyxVQUFVLENBQUMsQ0FBQztnQkFDekQsSUFBSSxpQkFBaUIsSUFBSSxDQUFDLElBQUksQ0FBQyxjQUFjLENBQUMsR0FBRyxDQUFDLFVBQVUsQ0FBQyxFQUFFLENBQUM7b0JBQzVELElBQUksQ0FBQyxjQUFjLENBQUMsR0FBRyxDQUFDLFVBQVUsRUFBRSxFQUFFLEdBQUcsaUJBQWlCLEVBQUUsQ0FBQyxDQUFDO29CQUM5RCxpQkFBaUIsQ0FBQyxjQUFjLEdBQUcsV0FBVyxDQUFDO2dCQUNuRCxDQUFDO1lBQ0wsQ0FBQztRQUNMLENBQUM7UUFFZSxRQUFRO1lBRXBCLEtBQUssTUFBTSxDQUFDLFFBQVEsRUFBRSxZQUFZLENBQUMsSUFBSSxJQUFJLENBQUMsWUFBWSxFQUFFLENBQUM7Z0JBQ3ZELG1DQUFnQixDQUFDLFFBQVEsQ0FBQyxHQUFHLFlBQVksQ0FBQztZQUM5QyxDQUFDO1lBR0QsS0FBSyxNQUFNLENBQUMsVUFBVSxFQUFFLGNBQWMsQ0FBQyxJQUFJLElBQUksQ0FBQyxjQUFjLEVBQUUsQ0FBQztnQkFDN0QsNEJBQWtCLENBQUMsVUFBVSxDQUFDLEdBQUcsY0FBYyxDQUFDO1lBQ3BELENBQUM7UUFDTCxDQUFDO0tBQ0o7SUE1Q0QsZ0NBNENDO0lBekMwQjtRQUR0QixhQUFHLENBQUMsUUFBUSxFQUFpQjt5Q0FDaUIifQ==
