@@ -7,5 +7,5 @@
 	"waywardVersion": "2.15.1-beta",
 	"multiplayer": "compatible",
 	"allowUnlockingMilestones": true,
-	"unloadable": true
+	"unloadable": false
 }
